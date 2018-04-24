@@ -138,7 +138,7 @@ if (require.main === module) {
     } else {
       console.log('Mongoui web app is listening on: %s', config.api.port)
       // Opens the url in the default browser
-      opn(`http://localhost:${config.api.port}`)
+      // opn(`http://localhost:${config.api.port}`)
     }
   })
 } else {
