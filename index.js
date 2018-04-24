@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict"
 
-const opn = require('opn')
+// const opn = require('opn')
 
 let log = console.log
 const express = require('express')
