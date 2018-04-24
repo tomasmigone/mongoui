@@ -22,11 +22,16 @@ let config = require('./config')
 
 const port = config.api.port
 
-let dbHostName, dbPortNumber, dbName
+let dbHostName, dbPortNumber, dbName, dbUser, dbPassword
 
 dbHostName = config.database.host
 dbPortNumber = config.database.port
 dbName = config.database.name
+dbUser = config.database.username
+dbPassword = config.database.password
+
+let connectionString = `mongodb://${dbUser}:${dbPassword}@${dbHostName}:${dbPortNumber}/${dbName}`
+console.log(`Connection string: ${connectionString}`)
 
 var app = express()
 app.use(favicon(path.join(__dirname, 'public', 'img', 'favicons', 'favicon.ico')))
@@ -38,14 +43,14 @@ app.use(express.static(path.join(__dirname,'public')))
 app.use(compression())
 
 app.get('/api/dbs', function(req, res) {
-  if (!req.admin) req.admin = mongoskin.db(`mongodb://${dbHostName}:${dbPortNumber}/${dbName}`).admin()
+  if (!req.admin) req.admin = mongoskin.db(connectionString).admin()
   req.admin.listDatabases(function(error, dbs) {
     res.json(dbs)
   })
 })
 
 app.param('dbName', function(req, res, next, dbName){
-  var db = mongoskin.db(`mongodb://${dbHostName}:${dbPortNumber}/${dbName}`)
+  var db = mongoskin.db(connectionString)
   req.db = db
   req.admin = db.admin()
   return next()
@@ -131,8 +136,8 @@ if (require.main === module) {
     if (process.env.NODE_ENV && process.env.NODE_ENV=='dev') {
       console.log('Mongoui API is listening on: %s', config.api.port)
     } else {
-      console.log('Mongoui web app is listening on: %s', config.api.port)    
-      // Opens the url in the default browser 
+      console.log('Mongoui web app is listening on: %s', config.api.port)
+      // Opens the url in the default browser
       opn(`http://localhost:${config.api.port}`)
     }
   })
